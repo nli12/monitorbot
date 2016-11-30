@@ -35,6 +35,19 @@ router.use(bodyParser.urlencoded({
 router.use(bodyParser.json());
 
 router.post('/runbot', function(req, res){
+
+	var pg = require('pg');
+
+	pg.defaults.ssl = true;
+	pg.connect(process.env.DATABASE_URL, function(err, client) {
+	  if (err) throw err;
+	  console.log('Connected to postgres! Getting schemas...');
+
+	    const query = client.query('CREATE TABLE items(id SERIAL PRIMARY KEY, text VARCHAR(40) not null, complete BOOLEAN)'); 
+	    query.on('end', () => { client.end(); });
+	});
+
+
   const spawn = require('child_process').spawn;
   const bot = spawn('node', ['donation_bot.js', req.body.authName, req.body.email, req.body.password, req.body.password2, req.user.emails[0].value]);
 
