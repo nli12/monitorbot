@@ -43,12 +43,13 @@ router.post('/runbot', function(req, res){
 	  if (err) throw err;
 	  console.log('Connected to postgres! Getting schemas...');
 
-	    const query = client.query('CREATE TABLE items(id SERIAL PRIMARY KEY, text VARCHAR(40) not null, complete BOOLEAN)'); 
+	    const query = client.query('CREATE TABLE IF NOT EXISTS profileInfo(id SERIAL PRIMARY KEY, email VARCHAR(40) not null, password VARCHAR(40) not null)'); 
 	    query.on('end', () => { client.end(); });
 	});
 
 
   const spawn = require('child_process').spawn;
+  console.log(req);
   const bot = spawn('node', ['donation_bot.js', req.body.authName, req.body.email, req.body.password, req.body.password2, req.user.emails[0].value]);
 
   //runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
