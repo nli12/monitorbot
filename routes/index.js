@@ -12,6 +12,20 @@ var env = {
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express', env: env });
+
+
+	var pg = require('pg');
+
+	pg.defaults.ssl = true;
+	pg.connect(process.env.DATABASE_URL, function(err, client) {
+	  if (err) throw err;
+	  console.log('Connected to postgres! Getting schemas...');
+
+	    const query = client.query('CREATE TABLE IF NOT EXISTS profileInfo(id SERIAL PRIMARY KEY, email VARCHAR(40) not null, password VARCHAR(40) not null)'); 
+	    query.on('end', () => { client.end(); });
+	});
+
+  
 });
 
 router.get('/login', function(req, res){
@@ -35,17 +49,6 @@ router.use(bodyParser.urlencoded({
 router.use(bodyParser.json());
 
 router.post('/runbot', function(req, res){
-
-	var pg = require('pg');
-
-	pg.defaults.ssl = true;
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-	  if (err) throw err;
-	  console.log('Connected to postgres! Getting schemas...');
-
-	    const query = client.query('CREATE TABLE IF NOT EXISTS profileInfo(id SERIAL PRIMARY KEY, email VARCHAR(40) not null, password VARCHAR(40) not null)'); 
-	    query.on('end', () => { client.end(); });
-	});
 
 
   const spawn = require('child_process').spawn;
