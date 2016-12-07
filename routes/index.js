@@ -9,13 +9,9 @@ var env = {
   AUTH0_CALLBACK_URL: process.env.AUTH0_CALLBACK_URL || 'http://localhost:3000/callback'
 };
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express', env: env });
-
 
 	var pg = require('pg');
-
+	console.log('Connected to postgres! Getting schemas...');
 	pg.defaults.ssl = true;
 	pg.connect(process.env.DATABASE_URL, function(err, client) {
 	  if (err) throw err;
@@ -25,7 +21,10 @@ router.get('/', function(req, res, next) {
 	    query.on('end', () => { client.end(); });
 	});
 
-  
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express', env: env });
 });
 
 router.get('/login', function(req, res){
@@ -49,7 +48,6 @@ router.use(bodyParser.urlencoded({
 router.use(bodyParser.json());
 
 router.post('/runbot', function(req, res){
-
 
   const spawn = require('child_process').spawn;
   console.log(req);
