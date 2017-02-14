@@ -3,24 +3,16 @@ var passport = require('passport');
 var router = express.Router();
 var bodyParser = require('body-parser');
 
+var mongodb = require('mongodb');
+const MONGO_URI = process.env.MONGODB.URI;
+
+var db; 
+
 var env = {
   AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
   AUTH0_DOMAIN: process.env.AUTH0_DOMAIN,
   AUTH0_CALLBACK_URL: process.env.AUTH0_CALLBACK_URL || 'http://localhost:3000/callback'
 };
-
-
-	var pg = require('pg');
-	console.log('Connected to postgres! Getting schemas...');
-	pg.defaults.ssl = true;
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-	  if (err) throw err;
-	  console.log('Connected to postgres! Getting schemas...');
-
-	    const query = client.query('CREATE TABLE IF NOT EXISTS profileInfo(id SERIAL PRIMARY KEY, email VARCHAR(40) not null, password VARCHAR(40) not null)'); 
-	    query.on('end', () => { client.end(); });
-	});
-
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -49,13 +41,35 @@ router.use(bodyParser.json());
 
 router.post('/runbot', function(req, res){
 
-  const spawn = require('child_process').spawn;
-  console.log(req);
-  const bot = spawn('node', ['donation_bot.js', req.body.authName, req.body.email, req.body.password, req.body.password2, req.user.emails[0].value]);
+	var seedData = {
+		auth_name: req.body.authName,
+		steam_name: req.body.email,
+		steam_password: req.body.password
+		steam_auth_code: req.body.password2
+		user_email: req.user.emails[0].value
+		monitoring: true
+		messages: []
+		other_events: []
+	};
 
-  //runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
-    
-  res.redirect('/user');
+	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
+		if(err) throw err;
+		db = database; 
+		var userAccount = db.collection('UserAccount');
+		console.log("Mongo ready");
+		userAccount.insert(seedData, function(err, result) {
+			if(err) throw err;
+			  const spawn = require('child_process').spawn;
+			  console.log(req);
+			  const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
+
+			  //runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
+			    
+			  res.redirect('/user');
+	  		});
+	});
+
+
 });
 /*
 router.get('/log', function(req,res){
@@ -65,7 +79,7 @@ router.get('/log', function(req,res){
 });
 */
 router.post('/log', function(req,res){
-  //console.log(req.body);
+  console.log(req.body);
   //downloads the log
   res.download('Z:/Desktop/auth/authStart/logs/' + req.body.authName + 'SteamLog');
 });

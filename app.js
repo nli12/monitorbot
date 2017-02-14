@@ -9,6 +9,7 @@ var dotenv = require('dotenv');
 var passport = require('passport');
 var Auth0Strategy = require('passport-auth0');
 
+
 dotenv.load();
 
 var routes = require('./routes/index');
