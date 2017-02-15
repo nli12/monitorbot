@@ -4,7 +4,7 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 
 var mongodb = require('mongodb');
-const MONGO_URI = process.env.MONGODB.URI;
+const MONGO_URI = process.env.MONGODB_URI;
 
 var db; 
 
