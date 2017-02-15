@@ -79,11 +79,7 @@ router.post('/log', function(req,res){
 		var userAccount = database.collection('UserAccount');
 		userAccount.findOne({auth_name: req.body.authName}, function(err, doc) {
 			if (err) throw err;
-			//downloads the log
-		  	res.setHeader('Content-disposition', 'attachment; filename=logs.txt');
-			res.setHeader('Content-type', 'text/plain');
-			res.charset = 'UTF-8';
-			res.write(JSON.stringify(doc));
+			alert(JSON.stringify(doc));
 		})
 	});
 

@@ -43,12 +43,6 @@ function getSHA1(bytes) {
 
 console.log('The code was: ' + authCode)
 
-//redirection
-var log_file = fs.createWriteStream('logs/' + process.argv[3] + 'SteamLog', {
-    flags: 'a'
-});
-var log_stdout = process.stdout;
-
 
 function checkMessage(message) {
 
