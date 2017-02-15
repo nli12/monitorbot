@@ -44,11 +44,11 @@ router.post('/runbot', function(req, res){
 	var seedData = {
 		auth_name: req.body.authName,
 		steam_name: req.body.email,
-		steam_password: req.body.password
-		steam_auth_code: req.body.password2
-		user_email: req.user.emails[0].value
-		monitoring: true
-		messages: []
+		steam_password: req.body.password,
+		steam_auth_code: req.body.password2,
+		user_email: req.user.emails[0].value,
+		monitoring: true,
+		messages: [],
 		other_events: []
 	};
 
