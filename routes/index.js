@@ -84,7 +84,7 @@ router.post('/log', function(req,res){
 			res.setHeader('Content-type', 'text/plain');
 			res.charset = 'UTF-8';
 			res.write(doc);
-		}
+		})
 	});
 
 
