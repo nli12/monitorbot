@@ -59,14 +59,14 @@ router.post('/runbot', function(req, res){
 		console.log("Mongo ready");
 		userAccount.insert(seedData, function(err, result) {
 			if(err) throw err;
-			  const spawn = require('child_process').spawn;
-			  console.log(req);
-			  const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
+			console.log(result)
+			const spawn = require('child_process').spawn;
+			const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
 
 			  //runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
 			    
-			  res.redirect('/user');
-	  		});
+			res.redirect('/user');
+	  	});
 	});
 
 
