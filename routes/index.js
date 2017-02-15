@@ -56,7 +56,7 @@ router.post('/runbot', function(req, res){
 		if(err) throw err;
 		db = database; 
 		var userAccount = db.collection('UserAccount');
-		console.log("Mongo ready");
+		console.log("MongoDB ready");
 		userAccount.insert(seedData, function(err, result) {
 			if(err) throw err;
 			console.log(result)
@@ -71,17 +71,23 @@ router.post('/runbot', function(req, res){
 
 
 });
-/*
-router.get('/log', function(req,res){
-  console.log(req.body);
-  //downloads the log
-  res.download('Z:/Desktop/auth/authStart/log.txt');
-});
-*/
+
 router.post('/log', function(req,res){
-  console.log(req.body);
-  //downloads the log
-  res.download('Z:/Desktop/auth/authStart/logs/' + req.body.authName + 'SteamLog');
+
+	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
+		if(err) throw err;
+		var userAccount = db.collection('UserAccount');
+		userAccount.findOne({auth_name: req.body.authName}, function(err, doc) {
+			if (err) throw err;
+			//downloads the log
+		  	res.setHeader('Content-disposition', 'attachment; filename=logs.txt');
+			res.setHeader('Content-type', 'text/plain');
+			res.charset = 'UTF-8';
+			res.write(doc);
+		}
+	});
+
+
 });
 
 module.exports = router;
