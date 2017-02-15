@@ -82,8 +82,10 @@ router.post('/log', function(req,res){
 		userAccount.findOne({auth_name: req.body.authName}, function(err, doc) {
 			if (err) throw err;
 			console.log(JSON.stringify(doc))
-			fs.writeFile('test', doc); 
-			res.download('test');
+			fs.writeFile('test', JSON.stringify(doc), function(error) {
+				res.download('test');
+			}); 
+			
 		})
 	});
 
