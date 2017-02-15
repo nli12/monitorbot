@@ -76,7 +76,7 @@ router.post('/log', function(req,res){
 
 	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
 		if(err) throw err;
-		var userAccount = db.collection('UserAccount');
+		var userAccount = database.collection('UserAccount');
 		userAccount.findOne({auth_name: req.body.authName}, function(err, doc) {
 			if (err) throw err;
 			//downloads the log
