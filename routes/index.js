@@ -3,6 +3,8 @@ var passport = require('passport');
 var router = express.Router();
 var bodyParser = require('body-parser');
 
+var fs = require('fs')
+
 var mongodb = require('mongodb');
 const MONGO_URI = process.env.MONGODB_URI;
 
@@ -79,7 +81,8 @@ router.post('/log', function(req,res){
 		var userAccount = database.collection('UserAccount');
 		userAccount.findOne({auth_name: req.body.authName}, function(err, doc) {
 			if (err) throw err;
-			alert(JSON.stringify(doc));
+			fs.writeFile('test', JSON.stringify(doc)); 
+			res.download('test');
 		})
 	});
 
