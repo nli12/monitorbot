@@ -62,7 +62,7 @@ router.post('/runbot', function(req, res){
 		userAccount.find({auth_name: req.body.authName}).toArray(function(err, docs) {
 			console.log(docs);
 			console.log(docs.length);
-			if (docs.length > 0) {
+			if (docs.length == 0) {
 				userAccount.insert(seedData, function(err, result) {
 					if(err) throw err;
 					console.log(result);
