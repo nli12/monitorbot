@@ -111,7 +111,7 @@ function activateMonitoring() {
   //alerts on log off for any reason
   steamClient.on('loggedOff', function() {
       const spawn = require('child_process').spawn;
-      const confo = spawn('node', ['sendFailure.js', authEmail]);
+      zconst confo = spawn('node', ['sendFailure.js', authEmail]);
 
       var currentEvent = {
         datetime: new Date()

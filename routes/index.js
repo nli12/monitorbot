@@ -59,18 +59,20 @@ router.post('/runbot', function(req, res){
 		db = database; 
 		var userAccount = db.collection('UserAccount');
 		console.log("MongoDB ready");
+		userAccount.drop(); 
+		/*
 		userAccount.insert(seedData, function(err, result) {
 			if(err) throw err;
 			console.log(result)
 			const spawn = require('child_process').spawn;
 			const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
 
-			  //runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
+			//runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
 			    
 			res.redirect('/user');
 	  	});
+	  	*/
 	});
-
 
 });
 
@@ -81,15 +83,18 @@ router.post('/log', function(req,res){
 		var userAccount = database.collection('UserAccount');
 		userAccount.findOne({auth_name: req.body.authName}, function(err, doc) {
 			if (err) throw err;
-			console.log(JSON.stringify(doc))
-			fs.writeFile('test', JSON.stringify(doc), function(error) {
-				res.download('test');
+			console.log(JSON.stringify(doc[messages]))
+			fs.writeFile('test.txt', JSON.stringify(doc[messages]), function(error) {
+				res.download('test.txt');
 			}); 
-			
 		})
 	});
-
-
 });
+
+/*
+if (doc[messages].length == 0) {
+	answer += "No messages yet!"
+}
+*/
 
 module.exports = router;
