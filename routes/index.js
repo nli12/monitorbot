@@ -59,8 +59,8 @@ router.post('/runbot', function(req, res){
 		db = database; 
 		var userAccount = db.collection('UserAccount');
 		console.log("MongoDB ready");
-		console.log(userAccount.find({auth_name: req.body.authName}).limit(1).size());
-		if (userAccount.find({auth_name: req.body.authName}).limit(1).size() == 0){
+		console.log(userAccount.find({auth_name: req.body.authName}, {limit:1}).size());
+		if (userAccount.find({auth_name: req.body.authName}, {limit:1}).size() == 0){
 			userAccount.insert(seedData, function(err, result) {
 				if(err) throw err;
 				console.log(result);
