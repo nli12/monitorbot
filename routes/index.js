@@ -59,19 +59,34 @@ router.post('/runbot', function(req, res){
 		db = database; 
 		var userAccount = db.collection('UserAccount');
 		console.log("MongoDB ready");
-		userAccount.drop(); 
-		/*
-		userAccount.insert(seedData, function(err, result) {
-			if(err) throw err;
-			console.log(result)
-			const spawn = require('child_process').spawn;
-			const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
+		console.log(userAccount.find({auth_name: req.body.authName}).limit(1).size());
+		if (userAccount.find({auth_name: req.body.authName}).limit(1).size() == 0){
+			userAccount.insert(seedData, function(err, result) {
+				if(err) throw err;
+				console.log(result);
+				const spawn = require('child_process').spawn;
+				const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
 
-			//runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
-			    
-			res.redirect('/user');
-	  	});
-	  	*/
+				//runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
+				    
+				res.redirect('/user');
+		  	});
+		} else {
+			songs.update({auth_name: req.body.authName},
+				{ $set: 
+					{ steam_name: req.body.email,
+					steam_password: req.body.password,
+					steam_auth_code: req.body.password2,
+					user_email: req.user.emails[0].value,
+					monitoring: true} 
+				},
+				function (err, result) {
+			        if(err) throw err;
+					const spawn = require('child_process').spawn;
+					const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
+					res.redirect('/user');
+			});
+		}
 	});
 
 });
