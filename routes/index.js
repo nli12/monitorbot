@@ -62,20 +62,19 @@ router.post('/runbot', function(req, res){
 		userAccount.find({auth_name: req.body.authName}).toArray(function(err, docs) {
 			console.log(docs);
 			console.log(docs.length);
-		});
-		if (userAccount.find({auth_name: req.body.authName}) != null){
-			userAccount.insert(seedData, function(err, result) {
-				if(err) throw err;
-				console.log(result);
-				const spawn = require('child_process').spawn;
-				const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
+			if (docs.length > 0) {
+				userAccount.insert(seedData, function(err, result) {
+					if(err) throw err;
+					console.log(result);
+					const spawn = require('child_process').spawn;
+					const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
 
-				//runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
-				    
-				res.redirect('/user');
-		  	});
-		} else {
-			songs.update({auth_name: req.body.authName},
+					//runBot(req.body.authName, req.body.email, req.body.password, req.body.password2);
+					    
+					res.redirect('/user');
+			  	});
+			} else {
+				userAccount.update({auth_name: req.body.authName},
 				{ $set: 
 					{ steam_name: req.body.email,
 					steam_password: req.body.password,
@@ -88,8 +87,9 @@ router.post('/runbot', function(req, res){
 					const spawn = require('child_process').spawn;
 					const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
 					res.redirect('/user');
-			});
-		}
+				});
+			}
+		});
 	});
 
 });
