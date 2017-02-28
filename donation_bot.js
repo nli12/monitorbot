@@ -41,9 +41,6 @@ function getSHA1(bytes) {
   return shasum.read();
 }
 
-console.log('The code was: ' + authCode)
-
-
 function checkMessage(message) {
 
     var size = (badWords.length) - 1;
