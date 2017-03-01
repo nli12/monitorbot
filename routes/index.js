@@ -103,7 +103,7 @@ router.post('/log', function(req,res){
 			if (err) throw err;
 			console.log(doc);
 			console.log(JSON.stringify(doc['messages']));
-			fs.writeFile('test.txt', JSON.stringify(doc[messages]), function(error) {
+			fs.writeFile('test.txt', JSON.stringify(doc['messages']), function(error) {
 				res.download('test.txt');
 			}); 
 		})
