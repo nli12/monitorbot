@@ -101,7 +101,6 @@ router.post('/log', function(req,res){
 		var userAccount = database.collection('UserAccount');
 		userAccount.findOne({auth_name: req.body.authName}, function(err, doc) {
 			if (err) throw err;
-			console.log(doc);
 			console.log(JSON.stringify(doc['messages']));
 			fs.writeFile('test.txt', JSON.stringify(doc['messages']), function(error) {
 				res.download('test.txt');
