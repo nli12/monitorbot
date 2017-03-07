@@ -29,6 +29,7 @@ userAccount.findOne({auth_name: process.argv[3]}, function(err, doc) {
     }
     authCode = doc['steam_auth_code'];
 
+    console.log("Data Loaded");
     setup();
     activateMonitoring(); 
 
@@ -55,6 +56,7 @@ function checkMessage(message) {
 }
 
 function setup() {
+  console.log("Setup Started");
   try {
     logOnOptions.sha_sentryfile = getSHA1(fs.readFileSync('sentry'));
   } catch (e) {
@@ -71,9 +73,10 @@ function setup() {
 }
 
 function activateMonitoring() {
-
+  console.log("Activating Monitoring");
   steamClient.connect();
   steamClient.on('connected', function() {
+  	  console.log("Logging On");
       steamUser.logOn(logOnOptions);
   });
 
