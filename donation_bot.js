@@ -20,6 +20,8 @@ var authCode;
 var db = process.argv[2];
 var userAccount = db.collection('UserAccount');
 
+console.log("Bot Spawned");
+
 userAccount.findOne({auth_name: process.argv[3]}, function(err, doc) {
     if (err) throw err;
     authEmail = doc['user_email'];
