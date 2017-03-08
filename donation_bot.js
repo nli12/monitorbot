@@ -87,8 +87,8 @@ function checkMessage(message) {
     while (size > -1) {
         if (message.includes(badWords[size])) {
             //send email confirmation for login
-            const spawn = require('child_process').spawn;
-            const confo = spawn('node', ['sendAlert.js', authEmail, message]);
+            //const spawn = require('child_process').spawn;
+            //const confo = spawn('node', ['sendAlert.js', authEmail, message]);
         }
         size--;
     }
@@ -152,8 +152,8 @@ function activateMonitoring() {
 
   //alerts on log off for any reason
   steamClient.on('loggedOff', function() {
-      const spawn = require('child_process').spawn;
-      zconst confo = spawn('node', ['sendFailure.js', authEmail]);
+      //const spawn = require('child_process').spawn;
+      //const confo = spawn('node', ['sendFailure.js', authEmail]);
 
       var currentEvent = {
         datetime: new Date(),
