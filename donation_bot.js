@@ -110,7 +110,7 @@ function setup() {
   if (fs.existsSync('servers')) {
     Steam.servers = JSON.parse(fs.readFileSync('servers'));
   }
-  
+
   console.log(logOnOptions);
 
   activateMonitoring(); 
@@ -139,7 +139,7 @@ function activateMonitoring() {
             event: "Monitor bot logged in as " + logOnOptions.account_name
           };
 
-          userAccount.update({auth_name: process.argv[3]}, { $push: { other_events: currentEvent } });
+          userAccount.update({auth_name: name}, { $push: { other_events: currentEvent } });
 
           //could possilby give away the bot
           //steamFriends.setPersonaState(Steam.EPersonaState.Online);
@@ -166,7 +166,7 @@ function activateMonitoring() {
         event: "Bot logged off and not monitoring, most likely due to a password change"
       };
 
-      userAccount.update({auth_name: process.argv[3]}, { $push: { other_events: currentEvent } });
+      userAccount.update({auth_name: name}, { $push: { other_events: currentEvent } });
 
   });
 
@@ -189,7 +189,7 @@ function activateMonitoring() {
         event: 'Got an invite to ' + chatRoomName + ' from ' + steamFriends.personaStates[patronID].player_name
       };
 
-      userAccount.update({auth_name: process.argv[3]}, { $push: { other_events: currentEvent } });
+      userAccount.update({auth_name: name}, { $push: { other_events: currentEvent } });
 
       steamFriends.joinChat(chatRoomID); // autojoin on invite
 
@@ -216,7 +216,7 @@ function activateMonitoring() {
       }
 
       currentMessage.recipient = reciever; 
-      userAccount.update({auth_name: process.argv[3]}, { $push: { messages: currentMessage } });
+      userAccount.update({auth_name: name}, { $push: { messages: currentMessage } });
 
     }
   });
@@ -243,7 +243,7 @@ function activateMonitoring() {
       }
 
       currentMessage.sender = sentBy;
-      userAccount.update({auth_name: process.argv[3]}, { $push: { messages: currentMessage } });
+      userAccount.update({auth_name: name}, { $push: { messages: currentMessage } });
     }
   });
 
@@ -258,7 +258,7 @@ function activateMonitoring() {
     if (clanState.announcements.length) {
       currentEvent.event = 'Group with SteamID ' + clanState.steamid_clan + 
                            ' has posted ' + clanState.announcements[0].headline
-      userAccount.update({auth_name: process.argv[3]}, { $push: { other_events: currentEvent } });
+      userAccount.update({auth_name: name}, { $push: { other_events: currentEvent } });
     }
 
   });
