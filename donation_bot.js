@@ -69,9 +69,9 @@ function initialize() {
 		    }
 		    authCode = doc['steam_auth_code'];
 
+		    console.log(logOnOptions);
 		    console.log("Data Loaded");
 		    setup();
-		    activateMonitoring(); 
 		});
 
 	});
@@ -111,6 +111,8 @@ function setup() {
   if (fs.existsSync('servers')) {
     Steam.servers = JSON.parse(fs.readFileSync('servers'));
   }
+
+  activateMonitoring(); 
 
 }
 
