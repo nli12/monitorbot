@@ -45,9 +45,6 @@ function publishMsg(name) {
 
 function userInput(seedData) {
 	var name = seedData['auth_name']; 
-	var pass = seedData['steam_password'];
-	var auth = seedData['steam_auth_code'];
-	var email = seedData['user_email'];
 
 	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
 		if(err) throw err;
@@ -68,10 +65,10 @@ function userInput(seedData) {
 			} else {
 				userAccount.update({auth_name: name},
 				{ $set: 
-					{ steam_name: name,
-					steam_password: pass,
-					steam_auth_code: auth,
-					user_email: email,
+					{ steam_name: seedData['steam_name'],
+					steam_password: seedData['steam_password'],
+					steam_auth_code: seedData['steam_auth_code'],
+					user_email: seedData['user_email'],
 					monitoring: true} 
 				},
 				function (err, result) {
