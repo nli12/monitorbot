@@ -83,7 +83,6 @@ function userInput(seedData) {
 			        console.log(result);
 			        console.log("Updated Account in Database");
 			        publishMsg(seedData['auth_name']);
-					res.redirect('/user');
 				});
 			}
 		});
@@ -132,6 +131,8 @@ router.post('/runbot', function(req, res){
 	};
 
 	createPublisherChannel(seedData);
+
+	res.redirect('/user');
 
 });
 
