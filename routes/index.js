@@ -131,7 +131,7 @@ router.post('/runbot', function(req, res){
 		other_events: []
 	};
 
-	createPublisherChannel();
+	createPublisherChannel(seedData);
 
 });
 
