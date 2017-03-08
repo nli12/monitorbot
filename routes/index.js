@@ -98,8 +98,6 @@ router.post('/runbot', function(req, res){
 
 						publishMsg(req.body.authName);
 
-						const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
-
 						res.redirect('/user');
 				  	});
 				} else {
@@ -117,13 +115,11 @@ router.post('/runbot', function(req, res){
 				        console.log("Updated Account in Database");
 
 				        publishMsg(req.body.authName);
-						
-						const bot = spawn('node', ['donation_bot.js', db, req.body.authName]);
 						res.redirect('/user');
 					});
 				}
 			});
-		});
+		})
 
 	);
 

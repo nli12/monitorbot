@@ -61,8 +61,8 @@ function initialize() {
 		    if (err) throw err;
 		    authEmail = doc['user_email'];
 		    logOnOptions = {
-		      account_name: doc['steam_name'];
-		      password: doc['steam_password'];
+		      account_name: doc['steam_name'],
+		      password: doc['steam_password']
 		    }
 		    authCode = doc['steam_auth_code'];
 
