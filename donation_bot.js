@@ -11,32 +11,69 @@ var steamUser = new Steam.SteamUser(steamClient);
 var steamFriends = new Steam.SteamFriends(steamClient);
 var steamWebLogOn = new SteamWebLogOn(steamClient, steamUser);
 
+var mongodb = require('mongodb');
+const MONGO_URI = process.env.MONGODB_URI;
+var db;
+var userAccount;
+
+var amqp_url = process.env.CLOUDAMQP_URL;
+var open_ampq = require('amqplib').connect(amqp_url);
+var consumerChnl; 
+
 var badWords = ["test"];
 
+var name; 
 var authEmail;
 var logOnOptions;
 var authCode;
 
-var db = process.argv[2];
-var userAccount = db.collection('UserAccount');
+createConsumerChannel().then(startConsuming()); 
 
-console.log("Bot Spawned");
+// Creates an AMPQ channel for consuming messages on 'my-worker-q'
+function createConsumerChannel() {     
+    open_ampq
+        .then(function(conn) {
+            conn.createChannel()
+                .then(function(ch) {
+                    ch.assertQueue('my-worker-q');
+                    consumerChnl = ch;
+            });
+        });
+}  
 
-userAccount.findOne({auth_name: process.argv[3]}, function(err, doc) {
-    if (err) throw err;
-    authEmail = doc['user_email'];
-    logOnOptions = {
-      account_name: doc['steam_name'];
-      password: doc['steam_password'];
-    }
-    authCode = doc['steam_auth_code'];
+function startConsuming() {
+    consumerChnl.consume('my-worker-q', function(msg){
+        if (msg !== null) {
+            name = msg.content.toString();
+            initialize();
+            consumerChnl.ack(msg);
+        }
+    })
+} 
 
-    console.log("Data Loaded");
-    setup();
-    activateMonitoring(); 
+function initialize() {
+	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
+		if(err) throw err;
+		db = database; 
+		userAccount = db.collection('UserAccount');
 
-});
+		userAccount.findOne({auth_name: name}, function(err, doc) {
+		    if (err) throw err;
+		    authEmail = doc['user_email'];
+		    logOnOptions = {
+		      account_name: doc['steam_name'];
+		      password: doc['steam_password'];
+		    }
+		    authCode = doc['steam_auth_code'];
 
+		    console.log("Data Loaded");
+		    setup();
+		    activateMonitoring(); 
+		});
+
+	});
+
+}
 
 function getSHA1(bytes) {
   var shasum = crypto.createHash('sha1');
