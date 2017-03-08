@@ -207,8 +207,8 @@ function activateMonitoring() {
 
     var reciever = null; 
 
-    if (message != '') {
-      checkMessage(message);
+    if (newMessage != '') {
+
       try {
         reciever = steamFriends.personaStates[source].player_name; 
       } catch (err) {
@@ -222,7 +222,7 @@ function activateMonitoring() {
   });
 
   //message received response
-  steamFriends.on('message', function(source, message, type, chatter) {
+  steamFriends.on('message', function(source, newMessage, type, chatter) {
 
     // respond to both chat room and private messages
     var currentMessage = {
@@ -234,8 +234,7 @@ function activateMonitoring() {
 
     var sentBy = null; 
 
-    if (message != '') {
-      checkMessage(message);
+    if (newMessage != '') {
       try {
         sentBy = steamFriends.personaStates[source].player_name; 
       } catch (err) {
