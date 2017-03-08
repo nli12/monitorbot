@@ -21,7 +21,7 @@ const ampq_url = process.env.CLOUDAMQP_URL;
 
 var publisherChnl;
 
-function createPublisherChannel() {
+function createPublisherChannel(seedData) {
     // Create an AMPQ "connection"
     ampq_open.connect(ampq_url)
         .then(function(conn) {
@@ -31,6 +31,9 @@ function createPublisherChannel() {
                 publisherChnl = ch;
                 // Now create a queue for the actual messages to be sent to the worker dyno 
                 publisherChnl.assertQueue('my-worker-q');
+
+                userInput(seedData);
+
             })
         })
 }
@@ -39,6 +42,47 @@ function publishMsg(name) {
      // Send the worker a message
      publisherChnl.sendToQueue('my-worker-q', new Buffer(name));
 }
+
+function userInput(seedData) {
+	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
+		if(err) throw err;
+		db = database; 
+		var userAccount = db.collection('UserAccount');
+		console.log("MongoDB ready");
+		userAccount.find({auth_name: seedData['auth_name']}).toArray(function(err, docs) {
+			console.log(docs);
+			console.log(docs.length);
+			if (docs.length == 0) {
+				userAccount.insert(seedData, function(err, result) {
+					if(err) throw err;
+					console.log(result);
+					console.log("Inserted New Account in Database");
+
+					publishMsg(seedData['auth_name']);
+
+					res.redirect('/user');
+				});
+			} else {
+				userAccount.update({auth_name: seedData['auth_name']},
+				{ $set: 
+					{ steam_name: seedData['steam_name'],
+					steam_password: seedData['steam_password'],
+					steam_auth_code: seedData['steam_auth_code'],
+					user_email: seedData['user_email'],
+					monitoring: true} 
+				},
+				function (err, result) {
+			        if(err) throw err;
+			        console.log(result);
+			        console.log("Updated Account in Database");
+			        publishMsg(seedData['auth_name']);
+					res.redirect('/user');
+				});
+			}
+		});
+	});
+}
+
 
 
 
@@ -80,48 +124,7 @@ router.post('/runbot', function(req, res){
 		other_events: []
 	};
 
-	createPublisherChannel().then(
-
-		mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
-			if(err) throw err;
-			db = database; 
-			var userAccount = db.collection('UserAccount');
-			console.log("MongoDB ready");
-			userAccount.find({auth_name: req.body.authName}).toArray(function(err, docs) {
-				console.log(docs);
-				console.log(docs.length);
-				if (docs.length == 0) {
-					userAccount.insert(seedData, function(err, result) {
-						if(err) throw err;
-						console.log(result);
-						console.log("Inserted New Account in Database");
-
-						publishMsg(req.body.authName);
-
-						res.redirect('/user');
-				  	});
-				} else {
-					userAccount.update({auth_name: req.body.authName},
-					{ $set: 
-						{ steam_name: req.body.email,
-						steam_password: req.body.password,
-						steam_auth_code: req.body.password2,
-						user_email: req.user.emails[0].value,
-						monitoring: true} 
-					},
-					function (err, result) {
-				        if(err) throw err;
-				        console.log(result);
-				        console.log("Updated Account in Database");
-
-				        publishMsg(req.body.authName);
-						res.redirect('/user');
-					});
-				}
-			});
-		})
-
-	);
+	createPublisherChannel();
 
 });
 
