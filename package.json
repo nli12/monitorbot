@@ -25,6 +25,8 @@
     "passport-auth0": "^0.5.0",
     "pg": "6.1.0",
     "serve-favicon": "~2.3.0",
-    "steam": "^1.4.0"
+    "steam": "^1.4.0",
+    "steam-web-api-key": "0.0.3",
+    "steam-weblogon": "0.0.5"
   }
 }
