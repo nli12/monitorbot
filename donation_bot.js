@@ -122,11 +122,14 @@ function activateMonitoring() {
   steamClient.on('logOnResponse', function(logonResp) {
       if (logonResp.eresult === Steam.EResult.OK) {
           //send email confirmation for login
-          const spawn = require('child_process').spawn;
-          const confo = spawn('node', ['sendConfirm.js', authEmail]);
+
+          //fix email functionality
+
+          //const spawn = require('child_process').spawn;
+          //const confo = spawn('node', ['sendConfirm.js', authEmail]);
 
           var currentEvent = {
-            datetime: new Date()
+            datetime: new Date(),
             event: "Monitor bot logged in as " + logOnOptions.account_name
           };
 
@@ -153,7 +156,7 @@ function activateMonitoring() {
       zconst confo = spawn('node', ['sendFailure.js', authEmail]);
 
       var currentEvent = {
-        datetime: new Date()
+        datetime: new Date(),
         event: "Bot logged off and not monitoring, most likely due to a password change"
       };
 
@@ -176,7 +179,7 @@ function activateMonitoring() {
   steamFriends.on('chatInvite', function(chatRoomID, chatRoomName, patronID) {
 
       var currentEvent = {
-        datetime: new Date()
+        datetime: new Date(),
         event: 'Got an invite to ' + chatRoomName + ' from ' + steamFriends.personaStates[patronID].player_name
       };
 
@@ -190,9 +193,9 @@ function activateMonitoring() {
   steamFriends.on('friendMsgEchoToSender', function(source, newMessage, type) {
 
     var currentMessage = {
-      datetime: new Date()
-      sender: "Current User Account"
-      recipient: null
+      datetime: new Date(),
+      sender: "Current User Account",
+      recipient: null,
       message: newMessage
     };
 
@@ -217,9 +220,9 @@ function activateMonitoring() {
 
     // respond to both chat room and private messages
     var currentMessage = {
-      datetime: new Date()
-      sender: null
-      recipient: "Current User Account"
+      datetime: new Date(),
+      sender: null,
+      recipient: "Current User Account",
       message: newMessage
     };
 
@@ -242,7 +245,7 @@ function activateMonitoring() {
   steamFriends.on('clanState', function(clanState) {
 
     var currentEvent = {
-      datetime: new Date()
+      datetime: new Date(),
       event: null
     };
 
