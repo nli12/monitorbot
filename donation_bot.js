@@ -27,6 +27,7 @@ var authEmail;
 var logOnOptions;
 var authCode;
 
+console.log("Creating Channel");
 createConsumerChannel(); 
 
 // Creates an AMPQ channel for consuming messages on 'my-worker-q'
@@ -37,6 +38,7 @@ function createConsumerChannel() {
                 .then(function(ch) {
                     ch.assertQueue('my-worker-q');
                     consumerChnl = ch;
+                    console.log("Channel Created");
                     startConsuming();
             });
         });

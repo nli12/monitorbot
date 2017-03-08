@@ -62,12 +62,8 @@ function userInput(seedData) {
 			if (docs.length == 0) {
 				userAccount.insert(seedData, function(err, result) {
 					if(err) throw err;
-					console.log(result);
 					console.log("Inserted New Account in Database");
-
 					publishMsg(name);
-
-					res.redirect('/user');
 				});
 			} else {
 				userAccount.update({auth_name: name},
@@ -80,7 +76,6 @@ function userInput(seedData) {
 				},
 				function (err, result) {
 			        if(err) throw err;
-			        console.log(result);
 			        console.log("Updated Account in Database");
 			        publishMsg(seedData['auth_name']);
 				});
