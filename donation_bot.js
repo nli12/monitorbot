@@ -27,8 +27,6 @@ var authEmail;
 var logOnOptions;
 var authCode;
 
-createConsumerChannel().then(startConsuming()); 
-
 // Creates an AMPQ channel for consuming messages on 'my-worker-q'
 function createConsumerChannel() {     
     open_ampq
@@ -50,6 +48,8 @@ function startConsuming() {
         }
     })
 } 
+
+createConsumerChannel().then(startConsuming()); 
 
 function initialize() {
 	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
