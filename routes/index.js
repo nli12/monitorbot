@@ -44,12 +44,19 @@ function publishMsg(name) {
 }
 
 function userInput(seedData) {
+	var name = seedData['auth_name']; 
+	var pass = seedData['steam_password'];
+	var auth = seedData['steam_auth_code'];
+	var email = seedData['user_email'];
+
 	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
 		if(err) throw err;
 		db = database; 
 		var userAccount = db.collection('UserAccount');
+
 		console.log("MongoDB ready");
-		userAccount.find({auth_name: seedData['auth_name']}).toArray(function(err, docs) {
+
+		userAccount.find({auth_name:name}).toArray(function(err, docs) {
 			console.log(docs);
 			console.log(docs.length);
 			if (docs.length == 0) {
@@ -58,17 +65,17 @@ function userInput(seedData) {
 					console.log(result);
 					console.log("Inserted New Account in Database");
 
-					publishMsg(seedData['auth_name']);
+					publishMsg(name);
 
 					res.redirect('/user');
 				});
 			} else {
-				userAccount.update({auth_name: seedData['auth_name']},
+				userAccount.update({auth_name: name},
 				{ $set: 
-					{ steam_name: seedData['steam_name'],
-					steam_password: seedData['steam_password'],
-					steam_auth_code: seedData['steam_auth_code'],
-					user_email: seedData['user_email'],
+					{ steam_name: name,
+					steam_password: pass,
+					steam_auth_code: auth,
+					user_email: email,
 					monitoring: true} 
 				},
 				function (err, result) {
