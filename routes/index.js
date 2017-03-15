@@ -74,7 +74,7 @@ function userInput(seedData) {
 				function (err, result) {
 			        if(err) throw err;
 			        console.log("Updated Account in Database");
-			        publishMsg(seedData['auth_name']);
+			        publishMsg(name);
 				});
 			}
 		});

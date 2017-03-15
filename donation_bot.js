@@ -153,6 +153,7 @@ function activateMonitoring() {
 
       } else {
           console.log("Login attempt failed, please re-enter login credentials");
+          return;
       }
   });
 
@@ -205,14 +206,18 @@ function activateMonitoring() {
       message: newMessage
     };
 
-    var reciever = null; 
+    var reciever = null;
+
+    console.log(source);
 
     if (newMessage != '') {
 
       try {
         reciever = steamFriends.personaStates[source].player_name; 
       } catch (err) {
-        reciever = "Offline User"
+      	console.log("Username Error");
+      	console.log(err);
+        reciever = "Offline User";
       }
 
       currentMessage.recipient = reciever; 
@@ -234,11 +239,15 @@ function activateMonitoring() {
 
     var sentBy = null; 
 
+    console.log(source);
+
     if (newMessage != '') {
       try {
         sentBy = steamFriends.personaStates[source].player_name; 
       } catch (err) {
-        sentBy = "Offline User"
+      	console.log("Username Error");
+      	console.log(err);
+        sentBy = "Offline User";
       }
 
       currentMessage.sender = sentBy;
