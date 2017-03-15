@@ -153,7 +153,7 @@ function activateMonitoring() {
 
       } else {
           console.log("Login attempt failed, please re-enter login credentials");
-          return;
+          steamClient.disconnect(); 
       }
   });
 
