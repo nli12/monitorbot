@@ -78,7 +78,7 @@ function userInput(seedData) {
 				        publishMsg(name);
 					});
 				}
-			}
+			})
 
 		});
 	});
