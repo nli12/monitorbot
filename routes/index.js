@@ -95,6 +95,11 @@ router.get('/monitor', function(req, res, next) {
   res.render('monitor', { user: req.user });
 });
 
+router.get('/auth', function(req, res, next) {
+  res.render('auth', { user: req.user });
+});
+
+
 router.get('/download', function(req, res, next) {
   res.render('download', { user: req.user });
 });
