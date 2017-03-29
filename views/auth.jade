@@ -1,0 +1,28 @@
+doctype html
+html
+	head
+		title Monitorbot Auth Code
+
+		style
+			include home.css
+	body
+		h2 Auth Code Confirmation
+		br
+		a(href='/logout') Logout
+		br
+		br
+		h4 An email with an Auth Code should have been sent to the associated account. Reenter the Steam Account information below along with the sent Auth Code to begin monitoring. 
+		br
+		form(action='/auth',method='post')
+			input(type='hidden', name='authName', value='#{user.nickname}')
+			label(for='email') Username
+			input(id='email',type='text',value='',placeholder='',name='email')
+			br
+			label(for='password') Password
+			input(id='password',type='password',value='',placeholder='',name='password')
+			br
+			label(for='hidden_password') Auth Code
+			input(id='hidden_password',type='text',value='',placeholder='',name='password2')
+			br
+			br
+			input(type='submit',value='Attempt Login', data-theme='c')

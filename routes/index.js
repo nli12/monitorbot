@@ -21,7 +21,7 @@ const ampq_url = process.env.CLOUDAMQP_URL;
 
 var publisherChnl;
 
-function createPublisherChannel(seedData) {
+function createPublisherChannel() {
     // Create an AMPQ "connection"
     ampq_open.connect(ampq_url)
         .then(function(conn) {
@@ -31,9 +31,6 @@ function createPublisherChannel(seedData) {
                 publisherChnl = ch;
                 // Now create a queue for the actual messages to be sent to the worker dyno 
                 publisherChnl.assertQueue('my-worker-q');
-
-                userInput(seedData);
-
             })
         })
 }
@@ -53,30 +50,36 @@ function userInput(seedData) {
 
 		console.log("MongoDB ready");
 
-		userAccount.find({auth_name:name}).toArray(function(err, docs) {
-			console.log(docs);
-			console.log(docs.length);
-			if (docs.length == 0) {
-				userAccount.insert(seedData, function(err, result) {
-					if(err) throw err;
-					console.log("Inserted New Account in Database");
-					publishMsg(name);
-				});
-			} else {
-				userAccount.update({auth_name: name},
-				{ $set: 
-					{ steam_name: seedData['steam_name'],
-					steam_password: seedData['steam_password'],
-					steam_auth_code: seedData['steam_auth_code'],
-					user_email: seedData['user_email'],
-					monitoring: true} 
-				},
-				function (err, result) {
-			        if(err) throw err;
-			        console.log("Updated Account in Database");
-			        publishMsg(name);
-				});
+		userAccount.find({	auth_name: name, 
+						  	steam_name: seedData['steam_name'] },
+						function(err,cursor) {
+
+			cursor.toArray(function(err, docs) {
+				console.log(docs);
+				console.log(docs.length);
+				if (docs.length == 0) {
+					userAccount.insert(seedData, function(err, result) {
+						if(err) throw err;
+						console.log("Inserted New Account in Database");
+						publishMsg(name);
+					});
+				} else {
+					userAccount.update({auth_name: name},
+					{ $set: 
+						{ steam_name: seedData['steam_name'],
+						steam_password: seedData['steam_password'],
+						steam_auth_code: seedData['steam_auth_code'],
+						user_email: seedData['user_email'],
+						monitoring: true} 
+					},
+					function (err, result) {
+				        if(err) throw err;
+				        console.log("Updated Account in Database");
+				        publishMsg(name);
+					});
+				}
 			}
+
 		});
 	});
 }
@@ -86,6 +89,7 @@ function userInput(seedData) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  createPublisherChannel();
   res.render('index', { title: 'Express', env: env });
 });
 
@@ -98,10 +102,14 @@ router.get('/logout', function(req, res){
   res.redirect('/');
 });
 
+router.get('/home', function(req, res){
+  res.redirect('/home');
+});
+
 router.get('/callback',
   passport.authenticate('auth0', { failureRedirect: '/url-if-something-fails' }),
   function(req, res) {
-    res.redirect(req.session.returnTo || '/user');
+    res.redirect(req.session.returnTo || '/home');
   });
 
 router.use(bodyParser.urlencoded({
@@ -115,6 +123,25 @@ router.post('/runbot', function(req, res){
 		auth_name: req.body.authName,
 		steam_name: req.body.email,
 		steam_password: req.body.password,
+		steam_auth_code: '',
+		user_email: req.user.emails[0].value,
+		monitoring: true,
+		messages: [],
+		other_events: []
+	};
+
+	userInput(seedData);
+
+	res.redirect('/auth');
+
+});
+
+router.post('/auth', function(req, res){
+
+	var seedData = {
+		auth_name: req.body.authName,
+		steam_name: req.body.email,
+		steam_password: req.body.password,
 		steam_auth_code: req.body.password2,
 		user_email: req.user.emails[0].value,
 		monitoring: true,
@@ -122,9 +149,9 @@ router.post('/runbot', function(req, res){
 		other_events: []
 	};
 
-	createPublisherChannel(seedData);
+	userInput(seedData);
 
-	res.redirect('/user');
+	res.redirect('/home');
 
 });
 
@@ -133,11 +160,17 @@ router.post('/log', function(req,res){
 	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
 		if(err) throw err;
 		var userAccount = database.collection('UserAccount');
-		userAccount.findOne({auth_name: req.body.authName}, function(err, doc) {
-			if (err) throw err;
+		userAccount.findOne({	auth_name: req.body.authName
+								steam_name: req.body.email,
+								steam_password: req.body.password}, 
+							function(err, doc) {
+			if (err) {
+				res.redirect('/download');
+			}
 			console.log(JSON.stringify(doc['messages']));
 			fs.writeFile('test.txt', JSON.stringify(doc['messages']), function(error) {
 				res.download('test.txt');
+				res.redirect('/home');
 			}); 
 		})
 	});

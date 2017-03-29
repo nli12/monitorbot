@@ -1,19 +1,20 @@
 doctype html
 html
 	head
-		title Monitorbot Login
+		title Download Logs
 
 		style
 			include home.css
 	body
-		h2 Monitoring Login
+		h2 Download Monitor Logs
 		br
 		a(href='/logout') Logout
 		br
 		br
-		h4 To begin, input the Steam account information below and hit 'submit'
+		h4 Input account information below to download logs:
 		br
-		form(action='/runbot',method='post')
+		br
+		form(action='/log', method='post')
 			input(type='hidden', name='authName', value='#{user.nickname}')
 			label(for='email') Username
 			input(id='email',type='text',value='',placeholder='',name='email')
@@ -22,4 +23,4 @@ html
 			input(id='password',type='password',value='',placeholder='',name='password')
 			br
 			br
-			input(type='submit',value='Submit', data-theme='c')
+			input(type='submit', value='Download Log')
