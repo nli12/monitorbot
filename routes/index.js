@@ -103,7 +103,7 @@ router.get('/logout', function(req, res){
 router.get('/callback',
   passport.authenticate('auth0', { failureRedirect: '/url-if-something-fails' }),
   function(req, res) {
-    res.redirect(req.session.returnTo || '/home');
+    res.redirect(req.session.returnTo || '/user');
   });
 
 router.use(bodyParser.urlencoded({
