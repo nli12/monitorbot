@@ -91,6 +91,10 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express', env: env });
 });
 
+router.get('/monitor', function(req, res, next) {
+  res.render('monitor', { user: req.user });
+});
+
 router.get('/login', function(req, res){
     res.render('login', { env: env });
 });
