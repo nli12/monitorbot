@@ -85,17 +85,19 @@ function userInput(seedData) {
 }
 
 
-
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
   createPublisherChannel();
   res.render('index', { title: 'Express', env: env });
 });
 
+router.get('/home', function(req, res){
+    res.render('home', { env: env });
+});
+
 router.get('/login', function(req, res){
     res.render('login', { env: env });
-  });
+});
 
 router.get('/logout', function(req, res){
   req.logout();
