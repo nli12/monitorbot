@@ -91,10 +91,6 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express', env: env });
 });
 
-router.get('/home', function(req, res){
-    res.render('home', { env: env });
-});
-
 router.get('/login', function(req, res){
     res.render('login', { env: env });
 });
@@ -149,7 +145,7 @@ router.post('/auth', function(req, res){
 
 	userInput(seedData);
 
-	res.redirect('/home');
+	res.redirect('/user');
 
 });
 
@@ -168,7 +164,7 @@ router.post('/log', function(req,res){
 			console.log(JSON.stringify(doc['messages']));
 			fs.writeFile('test.txt', JSON.stringify(doc['messages']), function(error) {
 				res.download('test.txt');
-				res.redirect('/home');
+				res.redirect('/user');
 			}); 
 		})
 	});
