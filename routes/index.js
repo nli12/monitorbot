@@ -177,10 +177,7 @@ router.post('/log', function(req,res){
 			} else {			
 				console.log(JSON.stringify(doc['messages']));
 				fs.writeFile('test.txt', JSON.stringify(doc['messages']), function(error) {
-					return res.download('test.txt', function(err) {
-						if (err) throw err;
-						res.redirect('/user');
-					});
+					res.download('test.txt');
 				}); 
 			}
 		})
