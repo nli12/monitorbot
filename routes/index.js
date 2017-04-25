@@ -171,23 +171,19 @@ router.post('/log', function(req,res){
 								steam_name: req.body.email,
 								steam_password: req.body.password}, 
 							function(err, doc) {
-			if (err) {
-				console.log("No such account found")
-				res.redirect('/download');
-			} else {			
+			if (err) throw err;
+			if (doc) {
 				console.log(JSON.stringify(doc['messages']));
 				fs.writeFile('test.txt', JSON.stringify(doc['messages']), function(error) {
 					res.download('test.txt');
-				}); 
+				});
+			} else {
+				console.log("No such account found")
+				res.redirect('/download');
 			}
+			
 		})
 	});
 });
-
-/*
-if (doc[messages].length == 0) {
-	answer += "No messages yet!"
-}
-*/
 
 module.exports = router;

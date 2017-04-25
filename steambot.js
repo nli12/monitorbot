@@ -18,7 +18,9 @@ var userAccount;
 
 var amqp_url = process.env.CLOUDAMQP_URL;
 var open_ampq = require('amqplib').connect(amqp_url);
-var consumerChnl; 
+var consumerChnl;
+
+var nodemailer = require("nodemailer");
 
 var badWords = ["test"];
 
@@ -83,17 +85,45 @@ function getSHA1(bytes) {
   return shasum.read();
 }
 
-function checkMessage(message) {
+function sendMail(sub, txt) {
+  // create reusable transport method (opens pool of SMTP connections)
+  var smtpTransport = nodemailer.createTransport("SMTP",{
+      service: "Gmail",
+      auth: {
+          user: "johnnyintern16@gmail.com",
+          pass: "ltsinterns"
+       }
+  });
 
-    var size = (badWords.length) - 1;
-    while (size > -1) {
-        if (message.includes(badWords[size])) {
-            //send email confirmation for login
-            //const spawn = require('child_process').spawn;
-            //const confo = spawn('node', ['sendAlert.js', authEmail, message]);
-        }
-        size--;
+  // setup e-mail data with unicode symbols
+  var mailOptions = {
+      from: "Johnny Intern <johnnyintern16@gmail.com>", // sender address
+      to: authEmail, // list of receivers
+      subject: sub, // subject line
+      text: txt // plaintext body
+  }
+
+  // send mail with defined transport object
+  smtpTransport.sendMail(mailOptions, function(error, response){
+      if(error){
+          console.log(error);
+      }else{
+          console.log("Message sent: " + response.message);
+      }
+      smtpTransport.close(); // shut down the connection pool, no more messages
+  });  
+}
+
+function checkMessage(message) {
+  var size = (badWords.length) - 1;
+  while (size > -1) {
+    if (message.includes(badWords[size])) {
+      subject = "Steam Guardian Alert";
+      text = "An expicit term was found in the following message: " + message;
+      sendMail(subject, text); 
     }
+    size--;
+  }
 }
 
 function setup() {
@@ -153,14 +183,13 @@ function activateMonitoring() {
 
       } else {
           console.log("Login attempt failed, please re-enter login credentials");
-          steamClient.disconnect(); 
+          steamClient.disconnect();
+          return; 
       }
   });
 
   //alerts on log off for any reason
   steamClient.on('loggedOff', function() {
-      //const spawn = require('child_process').spawn;
-      //const confo = spawn('node', ['sendFailure.js', authEmail]);
 
       var currentEvent = {
         datetime: new Date(),
@@ -175,12 +204,6 @@ function activateMonitoring() {
   steamClient.on('servers', function(servers) {
       fs.writeFile('servers', JSON.stringify(servers));
   });
-  /*
-                  steamUser.on('updateMachineAuth', function(sentry, callback) {
-                    fs.writeFileSync('sentry', sentry.bytes);
-                    callback({ sha_file: getSHA1(sentry.bytes) });
-                  });
-  */
 
   //chat room response
   steamFriends.on('chatInvite', function(chatRoomID, chatRoomName, patronID) {
