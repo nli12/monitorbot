@@ -1,17 +1,17 @@
 doctype html
 html
 	head
-		title Download Logs
+		title Send Logs
 
 		style
 			include home.css
 	body
-		h2 Download Monitor Logs
+		h2 Email Monitor Logs
 		br
 		a(href='/logout') Logout
 		br
 		br
-		h4 Input account information below to download logs:
+		h4 Input account information below to have the logs sent to your email:
 		br
 		form(action='/log', method='post')
 			input(type='hidden', name='authName', value='#{user.nickname}')

@@ -77,42 +77,44 @@ function userInput(seedData) {
 
 		console.log("MongoDB ready");
 
-		userAccount.findOne({auth_name: seedData['auth_name'], 
-						  	steam_name: seedData['steam_name'] },
-						function(err,doc) {
-				console.log(doc);
-				if (doc) {
-					userAccount.update({auth_name: seedData['auth_name'],
-										steam_name: seedData['steam_name']},
-										{ $set: 
-											{ steam_password: seedData['steam_password'],
-											steam_auth_code: seedData['steam_auth_code'],
-											monitoring: true} 
-										},
-					function (err, result) {
-				        if(err) throw err;
+		userAccount.findOne({
+			auth_name: seedData['auth_name'], 
+			steam_name: seedData['steam_name'] 
+		}, function(err,doc) {
+			if (doc) {
+				userAccount.update({
+					auth_name: seedData['auth_name'],
+					steam_name: seedData['steam_name']
+				},
+				{ $set: { 
+					steam_password: seedData['steam_password'],
+					steam_auth_code: seedData['steam_auth_code'],
+					monitoring: true
+					} 
+				}, function (err, result) {
+				    if(err) throw err;
 
-				        console.log("Updated Account in Database");
+				    console.log("Updated Account in Database");
 
-				        if (doc['monitoring'] = false){
-				        	publishMsg(seedData);
-				        } else {
-				        	var subject = "Steam Account Already Monitored";
-							var text = "You recently tried to activate monitoring for" + seedData['steam_name'] +
-									   " an account that is already being monitored.";
-							sendMail(subject, text); 
-				        	console.log("Account Already Being Monitored");
-				        }
+				    if (doc['monitoring'] = false){
+				    	publishMsg(seedData);
+				    } else {
+				    	var subject = "Steam Account Already Monitored";
+						var text = "You recently tried to activate monitoring for" + seedData['steam_name'] +
+								   " an account that is already being monitored.";
+						sendMail(subject, text); 
+				        console.log("Account Already Being Monitored");
+				    }
 				        
-					});
+				});
 
-				} else {
-					userAccount.insert(seedData, function(err, result) {
-						if(err) throw err;
-						console.log("Inserted New Account in Database");
-						publishMsg(seedData);
-					});
-				}
+			} else {
+				userAccount.insert(seedData, function(err, result) {
+				if(err) throw err;
+					console.log("Inserted New Account in Database");
+					publishMsg(seedData);
+				});
+			}
 
 		});
 	});
@@ -136,6 +138,10 @@ router.get('/auth', function(req, res, next) {
 
 router.get('/download', function(req, res, next) {
   res.render('download', { user: req.user });
+});
+
+router.get('/log_error', function(req, res, next) {
+  res.render('log_error', { user: req.user });
 });
 
 router.get('/login', function(req, res){
@@ -207,13 +213,13 @@ router.post('/log', function(req,res){
 							function(err, doc) {
 			if (err) throw err;
 			if (doc) {
-				console.log(JSON.stringify(doc['messages']));
-				fs.writeFile('test.txt', JSON.stringify(doc['messages']), function(error) {
-					res.download('test.txt');
-				});
+				var subject = "Steam Activity Log";
+        		var text = JSON.stringify(doc['messages']) + "\n" + JSON.stringify(doc['other_events']);
+        		sendMail(subject, text);
+        		res.redirect('/user');
 			} else {
 				console.log("No such account found")
-				res.redirect('/download');
+				res.redirect('/log_error');
 			}
 			
 		})
