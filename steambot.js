@@ -16,7 +16,7 @@ const MONGO_URI = process.env.MONGODB_URI;
 var db;
 var userAccount;
 
-var amqp_url = process.env.CLOUDAMQP_URL;
+const amqp_url = process.env.CLOUDAMQP_URL;
 var open_ampq = require('amqplib').connect(amqp_url);
 var consumerChnl;
 
@@ -24,7 +24,8 @@ var nodemailer = require("nodemailer");
 
 var badWords = ["test"];
 
-var name; 
+var info;
+var name;
 var authEmail;
 var logOnOptions;
 var authCode;
@@ -49,7 +50,7 @@ function createConsumerChannel() {
 function startConsuming() {
     consumerChnl.consume('my-worker-q', function(msg){
         if (msg !== null) {
-            name = msg.content.toString();
+            info = JSON.parse(msg.content.toString());
             initialize();
             consumerChnl.ack(msg);
         }
@@ -61,19 +62,15 @@ function initialize() {
 		if(err) throw err;
 		db = database; 
 		userAccount = db.collection('UserAccount');
+		authEmail = info['user_email'];
+		logOnOptions = {
+		  account_name: info['steam_name'],
+		  password: info['steam_password']
+		}
+		authCode = info['steam_auth_code'];
 
-		userAccount.findOne({auth_name: name}, function(err, doc) {
-		    if (err) throw err;
-		    authEmail = doc['user_email'];
-		    logOnOptions = {
-		      account_name: doc['steam_name'],
-		      password: doc['steam_password']
-		    }
-		    authCode = doc['steam_auth_code'];
-
-		    console.log("Data Loaded");
-		    setup();
-		});
+		console.log("Data Loaded");
+		setup();
 
 	});
 
@@ -90,11 +87,10 @@ function sendMail(sub, txt) {
   var smtpTransport = nodemailer.createTransport("SMTP",{
       service: "Gmail",
       auth: {
-          user: "johnnyintern16@gmail.com",
+          user: "johnnyintern16@gmail.com", // Valid existing email with password
           pass: "ltsinterns"
        }
   });
-
   // setup e-mail data with unicode symbols
   var mailOptions = {
       from: "Johnny Intern <johnnyintern16@gmail.com>", // sender address
@@ -102,7 +98,6 @@ function sendMail(sub, txt) {
       subject: sub, // subject line
       text: txt // plaintext body
   }
-
   // send mail with defined transport object
   smtpTransport.sendMail(mailOptions, function(error, response){
       if(error){
@@ -118,8 +113,8 @@ function checkMessage(message) {
   var size = (badWords.length) - 1;
   while (size > -1) {
     if (message.includes(badWords[size])) {
-      subject = "Steam Guardian Alert";
-      text = "An expicit term was found in the following message: " + message;
+      var subject = "Steam Monitoring Alert";
+      var text = "An expicit term was found in the following message: " + message;
       sendMail(subject, text); 
     }
     size--;
@@ -148,8 +143,10 @@ function setup() {
 }
 
 function activateMonitoring() {
+
   console.log("Activating Monitoring");
   steamClient.connect();
+
   steamClient.on('connected', function() {
   	  console.log("Logging On");
       steamUser.logOn(logOnOptions);
@@ -157,34 +154,32 @@ function activateMonitoring() {
 
   steamClient.on('logOnResponse', function(logonResp) {
       if (logonResp.eresult === Steam.EResult.OK) {
-          //send email confirmation for login
 
-          //fix email functionality
+        var subject = "Steam Monitoring Activated";
+        var text = "The following account is now being monitored: " + info['steam_name'];
+        sendMail(subject, text);
 
-          //const spawn = require('child_process').spawn;
-          //const confo = spawn('node', ['sendConfirm.js', authEmail]);
+        var currentEvent = {
+          datetime: new Date(),
+          event: "Monitor bot logged in as " + info['steam_name']
+        };
 
-          var currentEvent = {
-            datetime: new Date(),
-            event: "Monitor bot logged in as " + logOnOptions.account_name
-          };
+        userAccount.update({auth_name: name, 
+                            steam_name: info['steam_name']}, 
+                            {$push: {monitoring: true, 
+                                    other_events: currentEvent } });
 
-          userAccount.update({auth_name: name}, { $push: { other_events: currentEvent } });
-
-          //could possilby give away the bot
-          //steamFriends.setPersonaState(Steam.EPersonaState.Online);
-
-          steamWebLogOn.webLogOn(function(sessionID, newCookie) {
-              getSteamAPIKey({
-                  sessionID: sessionID,
-                  webCookie: newCookie
-              }, function(err, APIKey) {});
-          });
+        steamWebLogOn.webLogOn(function(sessionID, newCookie) {
+          getSteamAPIKey({
+            sessionID: sessionID,
+            webCookie: newCookie
+            }, function(err, APIKey) {});
+        });
 
       } else {
-          console.log("Login attempt failed, please re-enter login credentials");
-          steamClient.disconnect();
-          return; 
+        console.log("Login attempt failed, please re-enter login credentials");
+        steamClient.disconnect();
+        return; 
       }
   });
 
@@ -196,7 +191,7 @@ function activateMonitoring() {
         event: "Bot logged off and not monitoring, most likely due to a password change"
       };
 
-      userAccount.update({auth_name: name}, { $push: { other_events: currentEvent } });
+      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { other_events: currentEvent } });
 
   });
 
@@ -213,7 +208,7 @@ function activateMonitoring() {
         event: 'Got an invite to ' + chatRoomName + ' from ' + steamFriends.personaStates[patronID].player_name
       };
 
-      userAccount.update({auth_name: name}, { $push: { other_events: currentEvent } });
+      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { other_events: currentEvent } });
 
       steamFriends.joinChat(chatRoomID); // autojoin on invite
 
@@ -244,7 +239,7 @@ function activateMonitoring() {
       }
 
       currentMessage.recipient = reciever; 
-      userAccount.update({auth_name: name}, { $push: { messages: currentMessage } });
+      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { messages: currentMessage } });
 
     }
   });
@@ -274,7 +269,7 @@ function activateMonitoring() {
       }
 
       currentMessage.sender = sentBy;
-      userAccount.update({auth_name: name}, { $push: { messages: currentMessage } });
+      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { messages: currentMessage } });
     }
   });
 
@@ -289,7 +284,7 @@ function activateMonitoring() {
     if (clanState.announcements.length) {
       currentEvent.event = 'Group with SteamID ' + clanState.steamid_clan + 
                            ' has posted ' + clanState.announcements[0].headline
-      userAccount.update({auth_name: name}, { $push: { other_events: currentEvent } });
+      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { other_events: currentEvent } });
     }
 
   });

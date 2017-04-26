@@ -35,13 +35,42 @@ function createPublisherChannel() {
         })
 }
 
-function publishMsg(name) {
+function publishMsg(info) {
      // Send the worker a message
-     publisherChnl.sendToQueue('my-worker-q', new Buffer(name));
+     publisherChnl.sendToQueue('my-worker-q', new Buffer.from(JSON.stringify(info)););
 }
 
+
+function sendMail(sub, txt) {
+  // create reusable transport method (opens pool of SMTP connections)
+  var smtpTransport = nodemailer.createTransport("SMTP",{
+      service: "Gmail",
+      auth: {
+          user: "johnnyintern16@gmail.com", // Valid existing email with password
+          pass: "ltsinterns"
+       }
+  });
+  // setup e-mail data with unicode symbols
+  var mailOptions = {
+      from: "Johnny Intern <johnnyintern16@gmail.com>", // sender address
+      to: authEmail, // list of receivers
+      subject: sub, // subject line
+      text: txt // plaintext body
+  }
+  // send mail with defined transport object
+  smtpTransport.sendMail(mailOptions, function(error, response){
+      if(error){
+          console.log(error);
+      }else{
+          console.log("Message sent: " + response.message);
+      }
+      smtpTransport.close(); // shut down the connection pool, no more messages
+  });  
+}
+
+
 function userInput(seedData) {
-	var name = seedData['auth_name']; 
+	var info = ; 
 
 	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
 		if(err) throw err;
@@ -50,35 +79,42 @@ function userInput(seedData) {
 
 		console.log("MongoDB ready");
 
-		userAccount.find({	auth_name: name, 
+		userAccount.findOne({auth_name: seedData['auth_name'], 
 						  	steam_name: seedData['steam_name'] },
-						function(err,cursor) {
+						function(err,doc) {
+				console.log(doc);
+				if (doc) {
+					userAccount.update({auth_name: seedData['auth_name'],
+										steam_name: seedData['steam_name']},
+										{ $set: 
+											{ steam_password: seedData['steam_password'],
+											steam_auth_code: seedData['steam_auth_code'],
+											monitoring: true} 
+										},
+					function (err, result) {
+				        if(err) throw err;
 
-			cursor.toArray(function(err, docs) {
-				console.log(docs);
-				console.log(docs.length);
-				if (docs.length == 0) {
+				        console.log("Updated Account in Database");
+
+				        if (doc['monitoring'] = false){
+				        	publishMsg(seedData);
+				        } else {
+				        	var subject = "Steam Account Already Monitored";
+							var text = "You recently tried to activate monitoring for" + seedData['steam_name'] +
+									   " an account that is already being monitored.";
+							sendMail(subject, text); 
+				        	console.log("Account Already Being Monitored");
+				        }
+				        
+					});
+
+				} else {
 					userAccount.insert(seedData, function(err, result) {
 						if(err) throw err;
 						console.log("Inserted New Account in Database");
-						publishMsg(name);
-					});
-				} else {
-					userAccount.update({auth_name: name},
-					{ $set: 
-						{ steam_name: seedData['steam_name'],
-						steam_password: seedData['steam_password'],
-						steam_auth_code: seedData['steam_auth_code'],
-						user_email: seedData['user_email'],
-						monitoring: true} 
-					},
-					function (err, result) {
-				        if(err) throw err;
-				        console.log("Updated Account in Database");
-				        publishMsg(name);
+						publishMsg(seedData);
 					});
 				}
-			})
 
 		});
 	});
@@ -132,7 +168,7 @@ router.post('/runbot', function(req, res){
 		steam_password: req.body.password,
 		steam_auth_code: '',
 		user_email: req.user.emails[0].value,
-		monitoring: true,
+		monitoring: false,
 		messages: [],
 		other_events: []
 	};
@@ -151,7 +187,7 @@ router.post('/auth', function(req, res){
 		steam_password: req.body.password,
 		steam_auth_code: req.body.password2,
 		user_email: req.user.emails[0].value,
-		monitoring: true,
+		monitoring: false,
 		messages: [],
 		other_events: []
 	};
