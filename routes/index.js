@@ -70,8 +70,6 @@ function sendMail(sub, txt) {
 
 
 function userInput(seedData) {
-	var info = ; 
-
 	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
 		if(err) throw err;
 		db = database; 
