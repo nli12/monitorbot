@@ -37,7 +37,7 @@ function createPublisherChannel() {
 
 function publishMsg(info) {
      // Send the worker a message
-     publisherChnl.sendToQueue('my-worker-q', new Buffer.from(JSON.stringify(info)););
+     publisherChnl.sendToQueue('my-worker-q', new Buffer.from(JSON.stringify(info)));
 }
 
 
