@@ -41,7 +41,7 @@ function publishMsg(info) {
 }
 
 
-function sendMail(sub, txt) {
+function sendMail(sub, txt, address) {
   // create reusable transport method (opens pool of SMTP connections)
   var smtpTransport = nodemailer.createTransport("SMTP",{
       service: "Gmail",
@@ -53,7 +53,7 @@ function sendMail(sub, txt) {
   // setup e-mail data with unicode symbols
   var mailOptions = {
       from: "Johnny Intern <johnnyintern16@gmail.com>", // sender address
-      to: authEmail, // list of receivers
+      to: address, // list of receivers
       subject: sub, // subject line
       text: txt // plaintext body
   }
@@ -102,7 +102,7 @@ function userInput(seedData) {
 				    	var subject = "Steam Account Already Monitored";
 						var text = "You recently tried to activate monitoring for" + seedData['steam_name'] +
 								   " an account that is already being monitored.";
-						sendMail(subject, text); 
+						sendMail(subject, text, seedData['user_email']); 
 				        console.log("Account Already Being Monitored");
 				    }
 				        
@@ -215,7 +215,7 @@ router.post('/log', function(req,res){
 			if (doc) {
 				var subject = "Steam Activity Log";
         		var text = JSON.stringify(doc['messages']) + "\n" + JSON.stringify(doc['other_events']);
-        		sendMail(subject, text);
+        		sendMail(subject, text, doc['user_email']);
         		res.redirect('/user');
 			} else {
 				console.log("No such account found")
