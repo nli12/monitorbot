@@ -3,6 +3,7 @@ var passport = require('passport');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var fs = require('fs')
+var nodemailer = require("nodemailer");
 
 var mongodb = require('mongodb');
 const MONGO_URI = process.env.MONGODB_URI;
@@ -14,7 +15,6 @@ var env = {
   AUTH0_DOMAIN: process.env.AUTH0_DOMAIN,
   AUTH0_CALLBACK_URL: process.env.AUTH0_CALLBACK_URL || 'http://localhost:3000/callback'
 };
-
 
 var ampq_open = require('amqplib');
 const ampq_url = process.env.CLOUDAMQP_URL;
