@@ -1,10 +1,6 @@
 {
-  "name": "auth0-nodejs-regular-webapp-sample",
+  "name": "Steam Guardian",
   "version": "1.0.0",
-  "description": "Auth0 + NodeJS Regular WebApp seed",
-  "repository": "git://github.com/auth0/node-auth0",
-  "author": "Auth0",
-  "license": "MIT",
   "scripts": {
     "start": "node ./bin/www"
   },
@@ -18,7 +14,7 @@
     "express": "~4.13.1",
     "express-session": "^1.11.3",
     "jade": "~1.11.0",
-    "mongodb": "^2.2.24",
+    "mongodb": "^2.2.26",
     "morgan": "~1.6.1",
     "nodemailer": "^0.7.1",
     "passport": "^0.3.0",
