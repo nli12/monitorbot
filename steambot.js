@@ -164,8 +164,11 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
 
         userAccount.update({auth_name: info['auth_name'], 
                             steam_name: info['steam_name']}, 
-                            {$push: {monitoring: true, 
-                                    other_events: currentEvent } });
+                            {$push: {other_events: currentEvent } });
+        
+        userAccount.update({auth_name: info['auth_name'], 
+                            steam_name: info['steam_name']}, 
+                            {$set: {monitoring: true } });
 
         steamWebLogOn.webLogOn(function(sessionID, newCookie) {
           getSteamAPIKey({
