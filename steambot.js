@@ -57,10 +57,9 @@ function initialize(info) {
 		  account_name: info['steam_name'],
 		  password: info['steam_password']
 		}
-		var authCode = info['steam_auth_code'];
 
 		console.log("Data Loaded");
-		setup(info, authEmail, logOnOptions, authCode);
+		setup(info, logOnOptions);
 
 	});
 
@@ -112,13 +111,13 @@ function checkMessage(message, authEmail) {
   }
 }
 
-function setup(info, authEmail, logOnOptions, authCode) {
+function setup(info, logOnOptions) {
   console.log("Setup Started");
   try {
     logOnOptions.sha_sentryfile = getSHA1(fs.readFileSync('sentry'));
   } catch (e) {
-    if (authCode !== '') {
-      logOnOptions.auth_code = authCode;
+    if (info['steam_auth_code'] !== '') {
+      logOnOptions.auth_code = info['steam_auth_code'];
     }
   }
 
@@ -129,13 +128,13 @@ function setup(info, authEmail, logOnOptions, authCode) {
 
   console.log(logOnOptions);
 
-  activateMonitoring(info, authEmail, logOnOptions, authCode); 
+  activateMonitoring(info, logOnOptions); 
 
 }
 
 
 // Activates the monitoring for a given steam account
-function activateMonitoring(info, authEmail, logOnOptions, authCode) {
+function activateMonitoring(info, logOnOptions) {
 
   var steamClient = new Steam.SteamClient();
   var steamUser = new Steam.SteamUser(steamClient);
@@ -155,7 +154,7 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
 
         var subject = "Steam Monitoring Activated";
         var text = "The following account is now being monitored: " + info['steam_name'];
-        sendMail(subject, text, authEmail);
+        sendMail(subject, text, info['user_email']);
 
         var currentEvent = {
           datetime: new Date(),
@@ -165,7 +164,7 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
         userAccount.update({auth_name: info['auth_name'], 
                             steam_name: info['steam_name']}, 
                             {$push: {other_events: currentEvent } });
-        
+
         userAccount.update({auth_name: info['auth_name'], 
                             steam_name: info['steam_name']}, 
                             {$set: {monitoring: true } });
@@ -229,7 +228,7 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
 
     console.log(source);
 
-    checkMessage(newMessage, authEmail); 
+    checkMessage(newMessage, info['user_email']); 
 
     if (newMessage != '') {
 
@@ -261,6 +260,8 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
     var sentBy = null; 
 
     console.log(source);
+
+    checkMessage(newMessage, info['user_email']); 
 
     if (newMessage != '') {
       try {
