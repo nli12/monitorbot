@@ -162,7 +162,7 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
           event: "Monitor bot logged in as " + info['steam_name']
         };
 
-        userAccount.update({auth_name: name, 
+        userAccount.update({auth_name: info['auth_name'], 
                             steam_name: info['steam_name']}, 
                             {$push: {monitoring: true, 
                                     other_events: currentEvent } });
@@ -189,7 +189,7 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
         event: "Bot logged off and not monitoring, most likely due to a password change"
       };
 
-      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { other_events: currentEvent } });
+      userAccount.update({auth_name: info['auth_name'], steam_name: info['steam_name']}, { $push: { other_events: currentEvent } });
 
   });
 
@@ -206,7 +206,7 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
         event: 'Got an invite to ' + chatRoomName + ' from ' + steamFriends.personaStates[patronID].player_name
       };
 
-      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { other_events: currentEvent } });
+      userAccount.update({auth_name: info['auth_name'], steam_name: info['steam_name']}, { $push: { other_events: currentEvent } });
 
       steamFriends.joinChat(chatRoomID); // autojoin on invite
 
@@ -239,7 +239,7 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
       }
 
       currentMessage.recipient = reciever; 
-      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { messages: currentMessage } });
+      userAccount.update({auth_name: info['auth_name'], steam_name: info['steam_name']}, { $push: { messages: currentMessage } });
 
     }
   });
@@ -269,7 +269,7 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
       }
 
       currentMessage.sender = sentBy;
-      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { messages: currentMessage } });
+      userAccount.update({auth_name: info['auth_name'], steam_name: info['steam_name']}, { $push: { messages: currentMessage } });
     }
   });
 
@@ -284,7 +284,7 @@ function activateMonitoring(info, authEmail, logOnOptions, authCode) {
     if (clanState.announcements.length) {
       currentEvent.event = 'Group with SteamID ' + clanState.steamid_clan + 
                            ' has posted ' + clanState.announcements[0].headline
-      userAccount.update({auth_name: name, steam_name: info['steam_name']}, { $push: { other_events: currentEvent } });
+      userAccount.update({auth_name: info['auth_name'], steam_name: info['steam_name']}, { $push: { other_events: currentEvent } });
     }
 
   });
