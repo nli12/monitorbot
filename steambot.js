@@ -60,7 +60,7 @@ function initialize(info) {
 		var authCode = info['steam_auth_code'];
 
 		console.log("Data Loaded");
-		setup(authEmail, logOnOptions, authCode);
+		setup(info, authEmail, logOnOptions, authCode);
 
 	});
 
@@ -112,7 +112,7 @@ function checkMessage(message, authEmail) {
   }
 }
 
-function setup(authEmail, logOnOptions, authCode) {
+function setup(info, authEmail, logOnOptions, authCode) {
   console.log("Setup Started");
   try {
     logOnOptions.sha_sentryfile = getSHA1(fs.readFileSync('sentry'));
@@ -129,13 +129,13 @@ function setup(authEmail, logOnOptions, authCode) {
 
   console.log(logOnOptions);
 
-  activateMonitoring(authEmail, logOnOptions, authCode); 
+  activateMonitoring(info, authEmail, logOnOptions, authCode); 
 
 }
 
 
 // Activates the monitoring for a given steam account
-function activateMonitoring(authEmail, logOnOptions, authCode) {
+function activateMonitoring(info, authEmail, logOnOptions, authCode) {
 
   var steamClient = new Steam.SteamClient();
   var steamUser = new Steam.SteamUser(steamClient);
