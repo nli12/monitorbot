@@ -140,7 +140,7 @@ function setup(authEmail, logOnOptions, authCode) {
 
 
 // Activates the monitoring for a given steam account
-function activateMonitoring(authEmail, logOnOptions, authCode) {activateMonitoring:{
+function activateMonitoring(authEmail, logOnOptions, authCode) {
 
   console.log("Activating Monitoring");
   steamClient.connect();
@@ -177,7 +177,7 @@ function activateMonitoring(authEmail, logOnOptions, authCode) {activateMonitori
       } else {
         console.log("Login attempt failed, please re-enter login credentials");
         steamClient.disconnect();
-        break activateMonitoring; 
+        throw new Error("Login Failed"); 
       }
   });
 
@@ -289,5 +289,5 @@ function activateMonitoring(authEmail, logOnOptions, authCode) {activateMonitori
 
   });
 
-}}
+}
 
