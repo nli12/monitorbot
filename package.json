@@ -1,5 +1,5 @@
 {
-  "name": "Steam Guardian",
+  "name": "SteamGuardian",
   "version": "1.0.0",
   "scripts": {
     "start": "node ./bin/www"
