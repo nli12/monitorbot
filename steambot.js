@@ -142,6 +142,8 @@ function setup(authEmail, logOnOptions, authCode) {
 // Activates the monitoring for a given steam account
 function activateMonitoring(authEmail, logOnOptions, authCode) {
 
+activateMonitoring:{
+
   console.log("Activating Monitoring");
   steamClient.connect();
 
@@ -289,6 +291,7 @@ function activateMonitoring(authEmail, logOnOptions, authCode) {
 
   });
 
+}
 
 }
 
