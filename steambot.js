@@ -43,6 +43,7 @@ function createConsumerChannel() {
 
 function startConsuming() {
     consumerChnl.consume('my-worker-q', function(msg){
+        console.log("The msg is " + msg);
         if (msg !== null) {
             var info = JSON.parse(msg.content.toString());
             initialize(info);
@@ -176,7 +177,7 @@ function activateMonitoring(authEmail, logOnOptions, authCode) {
       } else {
         console.log("Login attempt failed, please re-enter login credentials");
         steamClient.disconnect();
-        return; 
+        break activateMonitoring; 
       }
   });
 
