@@ -6,11 +6,6 @@ var Steam = require('steam');
 var SteamWebLogOn = require('steam-weblogon');
 var getSteamAPIKey = require('steam-web-api-key');
 
-var steamClient = new Steam.SteamClient();
-var steamUser = new Steam.SteamUser(steamClient);
-var steamFriends = new Steam.SteamFriends(steamClient);
-var steamWebLogOn = new SteamWebLogOn(steamClient, steamUser);
-
 var mongodb = require('mongodb');
 const MONGO_URI = process.env.MONGODB_URI;
 var db;
@@ -142,6 +137,11 @@ function setup(authEmail, logOnOptions, authCode) {
 // Activates the monitoring for a given steam account
 function activateMonitoring(authEmail, logOnOptions, authCode) {
 
+  var steamClient = new Steam.SteamClient();
+  var steamUser = new Steam.SteamUser(steamClient);
+  var steamFriends = new Steam.SteamFriends(steamClient);
+  var steamWebLogOn = new SteamWebLogOn(steamClient, steamUser);
+
   console.log("Activating Monitoring");
   steamClient.connect();
 
@@ -177,7 +177,7 @@ function activateMonitoring(authEmail, logOnOptions, authCode) {
       } else {
         console.log("Login attempt failed, please re-enter login credentials");
         steamClient.disconnect();
-        throw new Error("Login Failed"); 
+        return; 
       }
   });
 
