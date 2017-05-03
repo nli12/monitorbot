@@ -96,15 +96,17 @@ function userInput(seedData) {
 
 				    console.log("Updated Account in Database");
 
-				    if (doc['monitoring'] = false){
+					publishMsg(seedData);
+
+				    /*if (doc['monitoring'] = false){
 				    	publishMsg(seedData);
 				    } else {
 				    	var subject = "Steam Account Already Monitored";
-						var text = "You recently tried to activate monitoring for" + seedData['steam_name'] +
+						var text = "You recently tried to activate monitoring for " + seedData['steam_name'] +
 								   " an account that is already being monitored.";
 						sendMail(subject, text, seedData['user_email']); 
 				        console.log("Account Already Being Monitored");
-				    }
+				    }*/
 				        
 				});
 

@@ -22,13 +22,7 @@ var consumerChnl;
 
 var nodemailer = require("nodemailer");
 
-var badWords = ["test"];
-
-var info;
-var name;
-var authEmail;
-var logOnOptions;
-var authCode;
+var badWords = JSON.parse(fs.readFileSync('badwords'));
 
 console.log("Creating Channel");
 createConsumerChannel(); 
@@ -50,27 +44,27 @@ function createConsumerChannel() {
 function startConsuming() {
     consumerChnl.consume('my-worker-q', function(msg){
         if (msg !== null) {
-            info = JSON.parse(msg.content.toString());
-            initialize();
+            var info = JSON.parse(msg.content.toString());
+            initialize(info);
             consumerChnl.ack(msg);
         }
     })
 } 
 
-function initialize() {
+function initialize(info) {
 	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
 		if(err) throw err;
 		db = database; 
 		userAccount = db.collection('UserAccount');
-		authEmail = info['user_email'];
-		logOnOptions = {
+		var authEmail = info['user_email'];
+		var logOnOptions = {
 		  account_name: info['steam_name'],
 		  password: info['steam_password']
 		}
-		authCode = info['steam_auth_code'];
+		var authCode = info['steam_auth_code'];
 
 		console.log("Data Loaded");
-		setup();
+		setup(authEmail, logOnOptions, authCode);
 
 	});
 
@@ -82,19 +76,19 @@ function getSHA1(bytes) {
   return shasum.read();
 }
 
-function sendMail(sub, txt) {
+function sendMail(sub, txt, address) {
   // create reusable transport method (opens pool of SMTP connections)
   var smtpTransport = nodemailer.createTransport("SMTP",{
       service: "Gmail",
       auth: {
-          user: "johnnyintern16@gmail.com", // Valid existing email with password
+          user: "johnnyintern16@gmail.com", // Valid existing email with password 
           pass: "ltsinterns"
        }
   });
   // setup e-mail data with unicode symbols
   var mailOptions = {
       from: "Johnny Intern <johnnyintern16@gmail.com>", // sender address
-      to: authEmail, // list of receivers
+      to: address, // list of receivers
       subject: sub, // subject line
       text: txt // plaintext body
   }
@@ -109,19 +103,20 @@ function sendMail(sub, txt) {
   });  
 }
 
-function checkMessage(message) {
+//Checks if a sent or recieved message contains any of the flagged words 
+function checkMessage(message, authEmail) {
   var size = (badWords.length) - 1;
   while (size > -1) {
     if (message.includes(badWords[size])) {
       var subject = "Steam Monitoring Alert";
       var text = "An expicit term was found in the following message: " + message;
-      sendMail(subject, text); 
+      sendMail(subject, text, authEmail); 
     }
     size--;
   }
 }
 
-function setup() {
+function setup(authEmail, logOnOptions, authCode) {
   console.log("Setup Started");
   try {
     logOnOptions.sha_sentryfile = getSHA1(fs.readFileSync('sentry'));
@@ -138,11 +133,13 @@ function setup() {
 
   console.log(logOnOptions);
 
-  activateMonitoring(); 
+  activateMonitoring(authEmail, logOnOptions, authCode); 
 
 }
 
-function activateMonitoring() {
+
+// Activates the monitoring for a given steam account
+function activateMonitoring(authEmail, logOnOptions, authCode) {
 
   console.log("Activating Monitoring");
   steamClient.connect();
@@ -157,7 +154,7 @@ function activateMonitoring() {
 
         var subject = "Steam Monitoring Activated";
         var text = "The following account is now being monitored: " + info['steam_name'];
-        sendMail(subject, text);
+        sendMail(subject, text, authEmail);
 
         var currentEvent = {
           datetime: new Date(),
@@ -227,6 +224,8 @@ function activateMonitoring() {
     var reciever = null;
 
     console.log(source);
+
+    checkMessage(newMessage, authEmail); 
 
     if (newMessage != '') {
 

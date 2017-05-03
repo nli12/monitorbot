@@ -11,7 +11,7 @@ html
 		a(href='/logout') Logout
 		br
 		br
-		h4 An email with an Auth Code should have been sent to the associated account. Reenter the Steam Account information below along with the sent Auth Code to begin monitoring. 
+		h4 An email with an Auth Code should have been sent to the associated account. Reenter the Steam Account information below along with the sent Auth Code to begin monitoring. Upon successful activation, a confirmation email should be sent to the associated account. 
 		br
 		form(action='/auth',method='post')
 			input(type='hidden', name='authName', value='#{user.nickname}')
