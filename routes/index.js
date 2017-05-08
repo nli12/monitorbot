@@ -40,7 +40,6 @@ function publishMsg(info) {
      publisherChnl.sendToQueue('my-worker-q', new Buffer.from(JSON.stringify(info)));
 }
 
-
 function sendMail(sub, txt, address) {
   // create reusable transport method (opens pool of SMTP connections)
   var smtpTransport = nodemailer.createTransport("SMTP",{
