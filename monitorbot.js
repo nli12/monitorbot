@@ -1,6 +1,6 @@
 var fs = require('fs');
 var crypto = require('crypto');
-//for redirection
+
 var util = require('util');
 var Steam = require('steam');
 var SteamWebLogOn = require('steam-weblogon');
@@ -52,7 +52,6 @@ function initialize(info) {
 		if(err) throw err;
 		db = database; 
 		userAccount = db.collection('UserAccount');
-		var authEmail = info['user_email'];
 		var logOnOptions = {
 		  account_name: info['steam_name'],
 		  password: info['steam_password']

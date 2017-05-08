@@ -1,0 +1,12 @@
+Gmail- 
+	Email: johnnyintern16@gmail.com
+	Password: ltsinterns
+
+Heroku-
+	Email: johnnyintern16@gmail.com
+	Password: ltsinterns16
+
+Steam- 
+	Username: mpearso7
+	Password: ltsinterns
+	Associated Email: johnnyintern16@gmail.com

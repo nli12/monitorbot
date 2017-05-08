@@ -1,2 +1,2 @@
 web: node ./bin/www
-worker: node steambot.js
+worker: node monitorbot.js
