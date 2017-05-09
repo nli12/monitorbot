@@ -47,29 +47,6 @@ function startConsuming() {
     })
 } 
 
-function initialize(info) {
-	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
-		if(err) throw err;
-		db = database; 
-		userAccount = db.collection('UserAccount');
-		var logOnOptions = {
-		  account_name: info['steam_name'],
-		  password: info['steam_password']
-		}
-
-		console.log("Data Loaded");
-		setup(info, logOnOptions);
-
-	});
-
-}
-
-function getSHA1(bytes) {
-  var shasum = crypto.createHash('sha1');
-  shasum.end(bytes);
-  return shasum.read();
-}
-
 function sendMail(sub, txt, address) {
   // create reusable transport method (opens pool of SMTP connections)
   var smtpTransport = nodemailer.createTransport("SMTP",{
@@ -110,10 +87,29 @@ function checkMessage(message, authEmail) {
   }
 }
 
+function initialize(info) {
+	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
+		if(err) throw err;
+		db = database; 
+		userAccount = db.collection('UserAccount');
+		var logOnOptions = {
+		  account_name: info['steam_name'],
+		  password: info['steam_password']
+		}
+
+		console.log("Data Loaded");
+		setup(info, logOnOptions);
+
+	});
+
+}
+
 function setup(info, logOnOptions) {
   console.log("Setup Started");
   try {
-    logOnOptions.sha_sentryfile = getSHA1(fs.readFileSync('sentry'));
+    shasum = crypto.createHash('sha1');
+    shasum.end(bfs.readFileSync('sentry'));
+    logOnOptions.sha_sentryfile = shasum.read();
   } catch (e) {
     if (info['steam_auth_code'] !== '') {
       logOnOptions.auth_code = info['steam_auth_code'];

@@ -214,7 +214,7 @@ router.post('/log', function(req,res){
 			if (err) throw err;
 			if (doc) {
 				var subject = "Steam Activity Log";
-        		var text = JSON.stringify(doc['messages']) + "\n" + JSON.stringify(doc['other_events']);
+        		var text = "Messages: \n " + JSON.stringify(doc['messages']) + "\n\n" + "Other Events: \n" + JSON.stringify(doc['other_events']);
         		sendMail(subject, text, doc['user_email']);
         		res.redirect('/user');
 			} else {

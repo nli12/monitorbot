@@ -10,3 +10,7 @@ Steam-
 	Username: mpearso7
 	Password: ltsinterns
 	Associated Email: johnnyintern16@gmail.com
+
+Auth0 (Application Login Page)-
+	Email: johnnyintern16@gmail.com
+	Password: ltsinterns
