@@ -218,16 +218,16 @@ router.post('/log', function(req,res){
 
 				for (var i = 0, len = doc['messages'].length; i < len; i++){
 					text = text + "Datetime: " + doc['messages'][i]['datetime'] + "\n" +
-								+ "Sender: " + doc['messages'][i]['sender'] + "\n" +
-								+ "Recipient: " + doc['messages'][i]['recipient'] + "\n" +
-								+ "Message: " + doc['messages'][i]['recipient'] + "\n\n";
+								  "Sender: " + doc['messages'][i]['sender'] + "\n" +
+								  "Recipient: " + doc['messages'][i]['recipient'] + "\n" +
+								  "Message: " + doc['messages'][i]['message'] + "\n\n";
 				}
 
 				text += "Other Events: \n\n";
 
 				for (var i = 0, len = doc['other_events'].length; i < len; i++){
 					text = text + "Datetime: " + doc['other_events'][i]['datetime'] + "\n" +
-								+ "Event: " + doc['other_events'][i]['event'] + "\n\n";
+								  "Event: " + doc['other_events'][i]['event'] + "\n\n";
 				}
 
         		sendMail(subject, text, doc['user_email']);
