@@ -87,8 +87,7 @@ function userInput(seedData) {
 				},
 				{ $set: { 
 					steam_password: seedData['steam_password'],
-					steam_auth_code: seedData['steam_auth_code'],
-					monitoring: true
+					steam_auth_code: seedData['steam_auth_code']
 					} 
 				}, function (err, result) {
 				    if(err) throw err;
@@ -172,7 +171,6 @@ router.post('/runbot', function(req, res){
 		steam_password: req.body.password,
 		steam_auth_code: '',
 		user_email: req.user.emails[0].value,
-		monitoring: false,
 		messages: [],
 		other_events: []
 	};
@@ -191,7 +189,6 @@ router.post('/auth', function(req, res){
 		steam_password: req.body.password,
 		steam_auth_code: req.body.password2,
 		user_email: req.user.emails[0].value,
-		monitoring: false,
 		messages: [],
 		other_events: []
 	};
@@ -214,7 +211,7 @@ router.post('/log', function(req,res){
 			if (err) throw err;
 			if (doc) {
 				var subject = "Steam Activity Log";
-				var text = "Messages: \n\n ";
+				var text = "Messages: \n\n";
 
 				for (var i = 0, len = doc['messages'].length; i < len; i++){
 					text = text + "Datetime: " + doc['messages'][i]['datetime'] + "\n" +
