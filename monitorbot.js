@@ -87,6 +87,7 @@ function checkMessage(message, authEmail) {
   }
 }
 
+//Connects to the database and sets up the logon options 
 function initialize(info) {
 	mongodb.MongoClient.connect(MONGO_URI, function(err, database) {
 		if(err) throw err;
@@ -96,7 +97,6 @@ function initialize(info) {
 		  account_name: info['steam_name'],
 		  password: info['steam_password']
 		}
-
 		console.log("Data Loaded");
 		setup(info, logOnOptions);
 
@@ -104,6 +104,7 @@ function initialize(info) {
 
 }
 
+//Performs addtional setup required for login
 function setup(info, logOnOptions) {
   console.log("Setup Started");
   try {
@@ -128,9 +129,10 @@ function setup(info, logOnOptions) {
 }
 
 
-// Activates the monitoring for a given steam account
+// Activates the monitoring for the given steam account
 function activateMonitoring(info, logOnOptions) {
 
+  // Creates new SteamClient objects
   var steamClient = new Steam.SteamClient();
   var steamUser = new Steam.SteamUser(steamClient);
   var steamFriends = new Steam.SteamFriends(steamClient);
